@@ -70,7 +70,7 @@ jobs:
           name: Back-end build
           command: |
             cd backend
-            npm i
+            npm i -g
             npm run build
       - save_cache:
           paths: [backend/node_modules]
@@ -115,8 +115,6 @@ jobs:
           name: frontend scan
           command: |
             cd frontend
-            ncu
-            ncu -u
             npm audit fix --audit-level=critical
       
 
