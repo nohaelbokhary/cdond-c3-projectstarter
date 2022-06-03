@@ -70,7 +70,7 @@ jobs:
           name: Back-end build
           command: |
             cd backend
-            npm i -g
+            npm i
             npm run build
       - save_cache:
           paths: [backend/node_modules]
