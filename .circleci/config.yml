@@ -115,6 +115,8 @@ jobs:
           name: frontend scan
           command: |
             cd frontend
+            ncu
+            ncu -u
             npm audit fix --audit-level=critical
       
 
