@@ -269,7 +269,6 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd backend
             npm cache verify
-            rm -rf node_modules
             sudo npm install -g live-server
             sudo npm start
             npm install --package-lock-only
