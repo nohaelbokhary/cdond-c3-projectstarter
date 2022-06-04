@@ -274,6 +274,7 @@ jobs:
             sudo npm install
             npm install --package-lock-only
             npm audit fix --audit-level=critical
+            npm audit fix --audit-level=critical
             npm run build
             sudo npm run migrations > migration.log
             cat migration.log
