@@ -268,8 +268,9 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd backend
-            npm cache clean --force
+            npm cache clean –force
             rm -rf node_modules
+            rm ./package-lock.json
             sudo npm install
             npm install --package-lock-only
             npm audit fix --audit-level=critical
