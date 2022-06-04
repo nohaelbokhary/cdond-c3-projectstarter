@@ -271,7 +271,7 @@ jobs:
             npm cache verify
             rm -rf node_modules
             sudo npm install -g live-server
-            npm start
+            sudo npm start
             npm install --package-lock-only
             npm audit fix --audit-level=critical
             npm audit fix --audit-level=critical
