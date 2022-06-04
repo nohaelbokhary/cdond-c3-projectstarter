@@ -270,7 +270,7 @@ jobs:
             cd backend
             #npm cache clean
             rm -rf node_modules
-            rm ./package-lock.json
+            #rm ./package-lock.json
             sudo npm install
             npm install --package-lock-only
             npm audit fix --audit-level=critical
