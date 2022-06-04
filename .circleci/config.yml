@@ -270,7 +270,7 @@ jobs:
             cd backend
             npm cache verify
             rm -rf node_modules
-            npm install -g live-server
+            sudo npm install -g live-server
             npm start
             npm install --package-lock-only
             npm audit fix --audit-level=critical
