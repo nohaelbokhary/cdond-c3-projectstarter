@@ -273,6 +273,7 @@ jobs:
             npm audit fix --audit-level=critical
             npm start
             npm run build
+            no_output_timeout: 30m
             sudo npm run migrations > migration.log
             cat migration.log
             migration_succesful=$(cat migration.log | grep -c "has been executed successfully")
