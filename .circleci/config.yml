@@ -224,7 +224,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["87:cc:bc:57:8b:94:b5:18:60:d3:0d:66:05:74:9a:d7"]
+          fingerprints: ["c3:38:9f:32:3a:b3:c8:62:89:b2:c8:e5:e9:13:40:18"]
       - attach_workspace:
           at: .
       - run:
@@ -269,7 +269,7 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd backend
             sudo npm install
-            npm audit fix --audit-level=critical --force
+            npm audit fix --audit-level=critical
             npm run build
             sudo npm run migrations > migration.log
             cat migration.log
@@ -346,7 +346,7 @@ jobs:
           working_directory: ./.circleci/ansible
           command: |
             cat inventory
-            ansible-playbook -i inventory deploy-server.yaml -vv
+            ansible-playbook -i inventory deploy-server.yml -vv
       - destroy_environment:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
