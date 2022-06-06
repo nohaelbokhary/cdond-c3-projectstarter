@@ -189,7 +189,7 @@ jobs:
        - image: cimg/base:stable
     steps:
       - checkout
-      - install_awscli
+      - aws-cli/setup
       - run:
           name: Ensure back-end infrastructure exists
           command: |
