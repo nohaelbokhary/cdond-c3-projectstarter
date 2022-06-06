@@ -177,12 +177,11 @@ jobs:
              
   deploy-infrastructure:
     docker:
-      # Docker image here that supports AWS CLI
-      # - image: amazon/aws-cli
-       - image: cimg/base:2020.01 # chosen because got an error on tar utility not presentin amazon/aws-cli
+
+       - image: cimg/base:stable
     steps:
       - checkout
-      - aws-cli/setup
+      -install_awscli
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -217,80 +216,7 @@ jobs:
                     id: ${CIRCLE_WORKFLOW_ID:0:7}
                     when: on_fail
                     
-  configure-infrastructure:
-    docker:
-       - image: python:3.7-alpine3.11
-      # Docker image here that supports Ansible
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["c3:38:9f:32:3a:b3:c8:62:89:b2:c8:e5:e9:13:40:18"]
-      - attach_workspace:
-          at: .
-      - run:
-          name: Install dependencies
-          working_directory: ./.circleci/ansible
-          command: |
-            apk add --update ansible
-            ansible --version
-      - run:
-          name: Configure server
-          working_directory: ./.circleci/ansible
-          command: |
-            pwd &&
-            ls -la
-            cat inventory.txt
-            ansible-playbook -i inventory.txt configure-server.yml
-      - destroy_environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
-
-  run-migrations:
-    docker:
-      # Docker image here that supports NodeJS
-       - image: circleci/node:13.8.0
-    steps:
-      # Checkout code from git
-      - checkout
-      - aws-cli/setup
-      - run:
-          name: Run migrations
-          command: |
-            echo ENVIRONMENT=production > "backend/.env"
-            echo TYPEORM_CONNECTION=postgres >> "backend/.env"
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> "backend/.env"
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
-            echo NODE_ENV=production >> "backend/.env"
-            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
-            echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
-            cd backend
-            npm cache verify
-            sudo npm install
-            npm audit fix --audit-level=critical
-            npm start
-            npm run build
-            #no_output_timeout: 30m
-            sudo npm run migrations > migration.log
-            cat migration.log
-            migration_succesful=$(cat migration.log | grep -c "has been executed successfully")
-            if [ $migration_succesful > 0 ]; then exit 0; else exit 1; fi;
-      - run:
-          name: Send migration results to memstash
-          command: |
-             curl https://kvdb.io/EVfPdgxSp9E45z5CV1Ttkb/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
-
-    # - destroy_environment:
-     #     id: ${CIRCLE_WORKFLOW_ID:0:7}
-    #      when: on_fail
-      - revert_migrations:
-           id: ${CIRCLE_WORKFLOW_ID:0:7}
-           when: on_fail
-             
-
+ 
 
  
 
@@ -313,17 +239,4 @@ workflows:
           filters:
             branches:
               only: [master]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires:
-            - test-backend
-            - test-frontend
-            - scan-backend
-            - scan-frontend
-            - configure-infrastructure
-          filters:
-            branches:
-              only:
-                - master
-         
+      -
