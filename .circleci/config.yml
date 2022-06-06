@@ -14,6 +14,17 @@ executors:
     docker:
       - image: amazon/aws-cli
 commands:
+  install_ansible:
+    describtion: installing ansible on ec2
+    steps: 
+       - run:
+           name: installing ansible on ec2
+           command: |
+                sudo apt update
+                sudo apt install software-properties-common
+                sudo add-apt-repository --yes --update ppa:ansible/ansible
+                sudo apt install ansible
+
   destroy_environment:
     description: Destroy Cloud Formation Stacks and infrastructure
     parameters:
@@ -33,11 +44,6 @@ commands:
             aws s3 rm s3://udapeople-<< parameters.id >> --recursive
             aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.id >>
           when: on_fail
-          
-               
-             
-           
-      
 
   revert_migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -186,7 +192,7 @@ jobs:
        - image: cimg/base:stable
     steps:
       - checkout
-      - aws-cli/setup
+      - install_awscli
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -220,6 +226,28 @@ jobs:
       - destroy_environment:
                     id: ${CIRCLE_WORKFLOW_ID:0:7}
                     when: on_fail
+
+  configure-infrastructure:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - install_ansible
+      - add_ssh_keys:
+          fingerprints: ["c3:38:9f:32:3a:b3:c8:62:89:b2:c8:e5:e9:13:40:18"]
+      - attach_workspace:
+          at: ~/
+      
+      - run:
+          name: Configure server
+          command: |
+              cd .circleci/ansible
+              cat inventory.txt
+              ansible-playbook -i inventory.txt configure-server.yml
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
+                 
                     
  
 
@@ -244,4 +272,5 @@ workflows:
           filters:
             branches:
               only: [master]
-      
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
