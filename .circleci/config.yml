@@ -283,79 +283,16 @@ jobs:
           command: |
              curl https://kvdb.io/EVfPdgxSp9E45z5CV1Ttkb/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
 
-     - destroy_environment:
+      - destroy_environment:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
            when: on_fail
-     - revert_migrations:
+      - revert_migrations:
            id: ${CIRCLE_WORKFLOW_ID:0:7}
            when: on_fail
              
 
 
-  deploy-frontend:
-    executor: node
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run:
-          name: Install AWS CLI dependencies
-          working_directory: /tmp
-          command: |
-            sudo apt-get update && sudo apt-get install -yy less
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
-          name: Rebuild frontend with backend API Url
-          working_directory: ./frontend
-          command: |
-            export API_URL=$(curl -H "token: 1e288415-cfc8-4a0a-a23c-087eb7cd7678" --request GET https://api.memstash.io/values/BACKEND_URL)
-            echo "${API_URL}"
-            npm run build
-      - run:
-          name: Deploy frontend objects to S3
-          working_directory: ./frontend
-          command: |
-            aws s3 cp ./dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
-      - persist_to_workspace:
-          root: .
-          paths:
-            - frontend/dist
-      - destroy_environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
-      
-
-
-  deploy-backend:
-    executor: python
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["06:55:19:5c:75:9c:0c:fa:5e:f0:ed:c4:2b:35:ec:76"]
-      - attach_workspace:
-          at: .
-      - run:
-          name: Install dependencies
-          working_directory: /tmp
-          command: |
-            apk add --update ansible curl rsync openssh nodejs npm
-            ansible --version
-            pip install awscli
-            aws --version
-      - run:
-          name: Deploy backend
-          working_directory: ./.circleci/ansible
-          command: |
-            cat inventory
-            ansible-playbook -i inventory deploy-server.yml -vv
-      - destroy_environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
-      - revert_migrations:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
+ 
 
 
 workflows:
@@ -389,9 +326,4 @@ workflows:
             branches:
               only:
                 - master
-      - deploy-backend:
-          requires:
-            - run-migrations
-      - deploy-frontend:
-          requires:
-            - run-migrations       
+         
