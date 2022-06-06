@@ -15,7 +15,7 @@ executors:
       - image: amazon/aws-cli
 commands:
   install_ansible:
-    describtion: installing ansible on ec2
+    description: installing ansible on ec2
     steps: 
        - run:
            name: installing ansible on ec2
