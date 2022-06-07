@@ -288,7 +288,6 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
-      # Checkout code from git
       - checkout
       - aws-cli/setup
       - install_nodejs
@@ -313,7 +312,7 @@ jobs:
             echo NODE_ENV=production >> "frontend/.env"
             echo API_URL=$API_URL >> "frontend/.env"
             echo $API_URL
-    - run:
+      - run:
         name: Deploy frontend objects to S3
     
         command: |
