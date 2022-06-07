@@ -297,7 +297,7 @@ jobs:
       - restore_cache:
           keys: [frontend-build]
               
-      - run :
+      - run:
           name: Install dependencies
           command: |
              cd frontend
