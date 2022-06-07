@@ -300,7 +300,8 @@ jobs:
               npm install                     
       - run:
           name: get  backend  Url
-          working_directory: ./frontend
+          - attach_workspace:
+              at: ~/
           command: |
               cd ./frontend
               BACKEND_BUBLIC_IP=$(aws ec2 describe-instances \
