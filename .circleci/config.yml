@@ -15,15 +15,25 @@ executors:
       - image: amazon/aws-cli
 commands:
   install_ansible:
-    description: installing ansible on ec2
+    description: installing ansible
     steps: 
        - run:
-           name: installing ansible on ec2
+           name: installing ansible
            command: |
-                sudo apt update
+                sudo apt update -y
                 sudo apt install software-properties-common
                 sudo add-apt-repository --yes --update ppa:ansible/ansible
-                sudo apt install ansible
+                sudo apt install ansible -y
+
+  install_nodejs:
+    description: installing ansible node js
+    steps: 
+       - run:
+           name: installing ansnode ible node js
+           command: |
+              curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+
 
   destroy_environment:
     description: Destroy Cloud Formation Stacks and infrastructure
@@ -272,7 +282,53 @@ jobs:
           when: on_fail
       - revert_migrations:
            Workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}
-           when: on_fail                        
+           when: on_fail              
+
+  deploy-frontend:
+    docker:
+      # Docker image here that supports NodeJS
+       - image:  cimg/base:stable
+    steps:
+      # Checkout code from git
+      - checkout
+      - aws-cli/setup
+      - install_nodejs
+    
+       - restore_cache:
+          keys: [frontend-build]
+              
+      - run : Install dependencies
+          name: 
+          command: |
+             cd frontend
+             npm install
+                          
+
+      - run:
+        name: get  backend  Url
+        working_directory: ./frontend
+        command: |
+            export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo ENVIRONMENT=production > "frontend/.env"
+            echo NODE_ENV=production >> "frontend/.env"
+            echo API_URL=$API_URL >> "frontend/.env"
+            echo $API_URL
+    - run:
+        name: Deploy frontend objects to S3
+    
+        command: |
+           cd frontend
+           npm run build
+           aws s3 cp ./dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
+    
+     - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
+      - revert_migrations:
+           Workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}
+           when: on_fail      
+    
                  
                     
  
@@ -302,4 +358,6 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]    
             
