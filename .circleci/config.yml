@@ -294,7 +294,7 @@ jobs:
       - aws-cli/setup
       - install_nodejs
     
-       - restore_cache:
+      - restore_cache:
           keys: [frontend-build]
               
       - run : Install dependencies
