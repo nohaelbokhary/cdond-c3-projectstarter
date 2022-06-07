@@ -297,11 +297,12 @@ jobs:
           name: Install dependencies
           command: |
               cd frontend
-              npm install                     
+              npm install   
+      - attach_workspace:
+              at: ~/                          
       - run:
           name: get  backend  Url
-          - attach_workspace:
-              at: ~/
+          
           command: |
               cd ./frontend
               BACKEND_BUBLIC_IP=$(aws ec2 describe-instances \
