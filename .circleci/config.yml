@@ -291,37 +291,32 @@ jobs:
       - checkout
       - aws-cli/setup
       - install_nodejs
-
       - restore_cache:
-          keys: [frontend-build]
-                
+          keys: [frontend-build]             
       - run:
           name: Install dependencies
           command: |
               cd frontend
-              npm install
-                        
-
+              npm install                     
       - run:
           name: get  backend  Url
           working_directory: ./frontend
           command: |
-                export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
-                export API_URL="http://${BACKEND_IP}:3030"
-                echo ENVIRONMENT=production > "frontend/.env"
-                echo NODE_ENV=production >> "frontend/.env"
-                echo API_URL=$API_URL >> "frontend/.env"
-                echo $API_URL
+              BACKEND_BUBLIC_IP=$(aws ec2 describe-instances \
+                --filters "Name=tag,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+                --query "Reservations[*].Instances[*].PublicIpAddress" \
+                --output text)
+                echo "API-URL=http://${BACKEND_BUBLIC_IP}:3030" >> frontend/.env
+                cat frontend/.env
       - run:
           name: Deploy frontend objects to S3
           command: |
               cd frontend
               npm run build
-              aws s3 cp ./dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
-    
+              aws s3 cp ./dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive    
       - destroy_environment:
-              id: ${CIRCLE_WORKFLOW_ID:0:7}
-              when: on_fail
+           id: ${CIRCLE_WORKFLOW_ID:0:7}
+           when: on_fail
       - revert_migrations:
             Workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}
             when: on_fail      
