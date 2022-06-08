@@ -304,14 +304,13 @@ jobs:
           name: get  backend  Url
           
           command: |
-              cd ./frontend
-              cat frontend/.env 
+            
               BACKEND_BUBLIC_IP=$(aws ec2 describe-instances \
                 --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
                 --query "Reservations[*].Instances[*].PublicIpAddress" \
                 --output text)
-                echo "API-URL=http://${BACKEND_BUBLIC_IP}:3030" >> frontend/.env
-                cat frontend/.env
+               # echo "API-URL=http://${BACKEND_BUBLIC_IP}:3030" >> frontend/.env
+               # cat frontend/.env
       - run:
           name: Deploy frontend objects to S3
           command: |
