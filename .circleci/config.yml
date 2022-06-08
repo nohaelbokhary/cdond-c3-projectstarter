@@ -26,12 +26,12 @@ commands:
                 sudo apt install ansible -y
 
   install_nodejs:
-    description: installing ansible node js
+    description: installing ansible node js 13
     steps: 
        - run:
            name: installing ansnode ible node js
            command: |
-              curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+              curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
               sudo apt-get install -y nodejs
 
 
@@ -324,7 +324,47 @@ jobs:
             Workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}
             when: on_fail      
 
-                 
+  deploy-backend:
+    docker:
+       - image: cimg/base:stable
+    steps:
+      - checkout
+      - aws-cli/setup
+      - install_nodejs
+      - install_ansible
+      - add_ssh_keys:
+          fingerprints: ["c3:38:9f:32:3a:b3:c8:62:89:b2:c8:e5:e9:13:40:18"]
+      - attach_workspace:
+              at: ~/       
+      - restore_cache:
+          keys: [frontend-build]             
+      - run:
+          name: Install dependencies
+          command: |
+              cd backend
+              npm install   
+      - run:
+          name: package backend
+          command: |
+              cd backend
+              npm run build
+              tar -czf artifact.tar.gz .circleci/ansible/roles/deploy/files   
+      - run:
+          name: deploy backend
+          command: |
+              export TYPEORM_MIGRATIONS_DIR: "./migrations"
+              export TYPEORM_MIGRATIONS: "./migrations/*.ts"
+              export TYPEORM_ENTITIES: "./modules/domain/**/*.entity{.js,.ts}"   
+              cd .circleci/ansible
+              cat inventory.txt
+              ansible-playbook -i inventory.txt deploy-backend.yml         
+      - destroy_environment:
+           id: ${CIRCLE_WORKFLOW_ID:0:7}
+           when: on_fail
+      - revert_migrations:
+            Workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail      
+               
                     
  
 
@@ -354,5 +394,8 @@ workflows:
       - run-migrations:
           requires: [configure-infrastructure]
       - deploy-frontend:
+          requires: [run-migrations]   
+       - deploy-backend:
           requires: [run-migrations]    
+                 
             
