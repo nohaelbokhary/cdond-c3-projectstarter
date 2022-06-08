@@ -1,7 +1,7 @@
 ---
   - name: "create beckend directory"
     file:
-       pathe: ~/backend
+       path: ~/backend
        state: directory
 
   - name: "unarchive backend directory"
