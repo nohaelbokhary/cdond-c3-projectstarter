@@ -17,10 +17,7 @@
 
 
 
-  - name: "Executing node app with pm2"
-   
-    
-
+  - name: "Executing node app with pm2" 
     shell: |
       
       cd ~/backend-app/dist
