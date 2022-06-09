@@ -15,13 +15,19 @@
       cd ~/backend-app
       npm i
 
-    
+  - name: "start server"
+    become: true
+    command: pm2 start -f ./main.js
+    args:
+      chdir: /home/ubuntu/backend-app/dist 
 
-  - name: "Executing node app with pm2"
-    shell: |
-      cd ~/backend-app/dist
-      pm2 stop default
-      pm2 start main.js
+ # - name: "Executing node app with pm2"
+ #   shell: |
+ #     cd ~/backend-app/dist
+ #    pm2 stop default
+ #     pm2 start main.js
+
+   
      
     register: execute_node
 
