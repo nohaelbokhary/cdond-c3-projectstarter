@@ -9,7 +9,7 @@
     become: true
     unarchive:
         src: artifact.tar.gz
-        dest: ~/backend-app
+        dest: /home/ubuntu
    
 
   - name: "installing Node Dependencies "
