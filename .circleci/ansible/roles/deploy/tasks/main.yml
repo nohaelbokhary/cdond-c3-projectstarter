@@ -1,28 +1,32 @@
 ---
   - name: "create beckend directory"
-    file:
-       path: ~/backend-app
-       state: directory
+    become: true
+    copy:
+       src: artifact.tar.gz
+       dest: /home/ubuntu
 
   - name: "unarchive backend directory"
+    become: true
     unarchive:
         src: artifact.tar.gz
         dest: ~/backend-app
    
 
-  - name: "installing Node Dependencies"
+  - name: "installing Node Dependencies "
     shell: |
-      cd ~/backend-app
+      cd /home/ubuntu/backend
       npm i
-
 
 
   - name: "Executing node app with pm2"
     become: true
     shell: |
-      cd ~/backend-app/dist
+      cd /home/ubuntu/backend/dist
       pm2 stop default
       pm2 start main.js
+
+   
+     
     register: execute_node
 
 
