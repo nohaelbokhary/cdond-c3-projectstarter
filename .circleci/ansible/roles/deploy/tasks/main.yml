@@ -24,10 +24,6 @@
       pm2 stop default
       pm2 start main.js
     become: yes  
-     
-
-   
-     
     register: execute_node
 
 
