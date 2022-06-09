@@ -1,29 +1,28 @@
 ---
-  - name: "create beckend directory"
+   - name: "copy backend binaries"
+    become: yes
+    synchronize:
+      src: ../../backend/dist
+      dest: /home/ubuntu/uda_app
+      recursive: true
+
+  - name: "copy node_modules"
+    become: yes
+    synchronize:
+      src: ../../backend/node_modules
+      dest: /home/ubuntu/uda_app
+      recursive: true
+
+  - name: "delete anything that might already be running"
     become: true
-    copy:
-       src: artifact.tar.gz
-       dest: /home/ubuntu
+    command: pm2 delete all
+    ignore_errors: true
 
-  - name: "unarchive backend directory"
+  - name: "start server"
     become: true
-    unarchive:
-        src: artifact.tar.gz
-        dest: /home/ubuntu
-   
-
-  - name: "installing Node Dependencies "
-    shell: |
-      cd /home/ubuntu/backend
-      npm i
-
-
-  - name: "Executing node app with pm2"
-    become: true
-    shell: |
-      cd /home/ubuntu/backend/dist
-      pm2 stop default
-      pm2 start main.js
+    command: pm2 start -f ./main.js
+    args:
+      chdir: /home/ubuntu/uda_app/dist
 
    
      
