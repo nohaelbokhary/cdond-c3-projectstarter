@@ -350,9 +350,7 @@ jobs:
               npm run build
               cd ..
               tar -C backend -czvf artifact.tar.gz .
-              #mkdir -p .circleci/ansible/roles/deploy/files/ 
-              #tar -czf artifact.tar.gz .circleci/ansible/roles/deploy/files/
-              #cp -p artifact.tar.gz .circleci/ansible/roles/deploy/files/ 
+
       - run:
           name: deploy backend
           command: |
@@ -362,14 +360,49 @@ jobs:
               cd .circleci/ansible
               cat inventory.txt
               ansible-playbook -i inventory.txt deploy-backend.yml         
-     # - destroy_environment:
-      #     id: ${CIRCLE_WORKFLOW_ID:0:7}
-     #      when: on_fail
-     # - revert_migrations:
-      #      Workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}
-      #      when: on_fail      
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
+      - revert_migrations:
+          Workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail      
                
-                    
+  smoke-test:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - aws-cli/setup
+      - install_nodejs   
+      - run:
+          name: Get backend url
+          command: |
+           BACKEND_BUBLIC_IP=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --query "Reservations[*].Instances[*].PublicIpAddress" \
+            --output text)
+            export API-URL=http://${BACKEND_BUBLIC_IP}:3030
+            if curl -s $API-URL/api/status | grep "ok"
+            then
+              exit 0
+            else
+              exit 1
+            fi     
+          name: Frontend smoke test.
+          command: |
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-${AWS_DEFAULT_REGION}.amazonaws.com"
+            if curl -s $URL | grep "Welcome"
+            then
+              exit 0
+            else
+              exit 1
+            fi     
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID}"
+          when: on_fail     
+      - revert_migrations:
+          Workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail                     
  
 
  
@@ -400,6 +433,9 @@ workflows:
       - deploy-frontend:
           requires: [run-migrations]   
       - deploy-backend:
-          requires: [run-migrations]    
+          requires: [run-migrations]  
+      - smoke-test:
+          requires: [deploy-frontend, deploy-backend]       
+
                  
             
