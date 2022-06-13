@@ -3,7 +3,7 @@
   become: yes
   copy:
     src: ~/project/artifact.tar.gz
-    dest: /home/ubuntu/artifact.tar.gz
+    dest: /home/ubuntu/UDA-APP/artifact.tar.gz
 
 - name: prepare binaries
   become: true
@@ -15,4 +15,4 @@
   become: true
   shell: |
     cd /home/ubuntu/UDA-APP
-    pm2 start npm --name backend -- start
+    pm2 start npm --name UDA-APP -- start
