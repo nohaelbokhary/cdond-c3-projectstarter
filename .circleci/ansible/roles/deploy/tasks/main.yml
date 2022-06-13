@@ -6,7 +6,7 @@
 
 - name: "copy backend directory"
   copy:
-    src:  ./.circleci/ansible/roles/deploy/files
+    src: ~/project/artifact.tar.gz
     dest:  ~/backend_app
     remote_src: true
 
@@ -24,7 +24,7 @@
 
 - name: "start node app with PM2"
   command: |
-    pm2 start ~/backend_app/dist/main.js -f
+    pm2 start ~/backend_app/main.js -f
   ignore_errors: true
 
  
