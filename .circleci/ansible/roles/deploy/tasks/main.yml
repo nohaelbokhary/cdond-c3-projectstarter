@@ -11,7 +11,7 @@
 
 
 - name: "installing Node Dependencies"
-  command: |
+  shell: |
       cd ~/backend-app
       tar xvzf artifact.tar.gz -C .
       npm i
