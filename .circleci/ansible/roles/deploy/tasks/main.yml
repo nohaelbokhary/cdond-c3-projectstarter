@@ -11,6 +11,7 @@
     cd /home/ubuntu/UDA-APP
     tar xvzf artifact.tar.gz -C .
 
+
 - name: start server
   become: true
   shell: |
