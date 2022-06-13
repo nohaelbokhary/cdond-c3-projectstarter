@@ -10,8 +10,8 @@
     dest:  ~/backend_app
     remote_src: true
 
- - name: "installing Node Dependencies"
-   command: |
+- name: "installing Node Dependencies"
+  command: |
       cd ~/backend-app
       npm i
     
