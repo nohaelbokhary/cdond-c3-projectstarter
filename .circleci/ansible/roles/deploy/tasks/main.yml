@@ -1,28 +1,33 @@
 ---
 - name: "Create Backend directory."
   file:
-    path: ~/backend
+    path: ~/backend_app
     state: directory
 
-- name: "unarchive backend directory"
-  unarchive:
-    src: artifact.tar.gz
-    dest:  ~/backend
+- name: "copy backend directory"
+  copy:
+    src: ./../../backend/dist
+    dest:  ~/backend_app
+    remote_src: true
 
-- name: "installing node dependecies"
-  shell: |
-    cd ~/backend
-    npm i
+- name: "copy node module files"
+  copy:
+    src: ./../../backend/node_modules
+    dest:  ~/backend_app
+    remote_src: true
+
+- name: "delete all pm2 process"
+  command: |
+     pm2 delete all
+  ignore_errors: true
 
 
-- name: "executing node app with PM2"
-  shell: |
-    cd ~/backend/dist
-    pm2 stop default
-    pm2 start main.js
+- name: "start node app with PM2"
+  command: |
+    pm2 start ~/backend_app/dist/main.js -f
+  ignore_errors: true
 
-  args:
-    chdir: ~/backend/dist
+ 
   environment:
       NODE_ENV: production
       TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
