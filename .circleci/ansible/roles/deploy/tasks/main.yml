@@ -1,19 +1,37 @@
 ---
-- name: copy dist backend folder to ec2 server
-  become: yes
+- name: Create Backend directory.
+  file:
   copy:
-    src: ~/project/artifact.tar.gz
-    dest: /home/ubuntu/UDA-APP/artifact.tar.gz
+    path: ~/backend
+    state: directory
 
-- name: prepare binaries
-  become: true
+- name: unarchive backend directory
+  unarchive:
+  src: artifact.tar.gz
+  dest:  ~/backend
+
+- name: installing node dependecies
   shell: |
-    cd /home/ubuntu/UDA-APP
-    tar xvzf artifact.tar.gz -C .
+    cd ~/backend
+    npm i
 
 
-- name: start server
-  become: true
+- name: ewxecuting node app with PM2
   shell: |
-    cd /home/ubuntu/UDA-APP
-    pm2 start npm --name UDA-APP -- start
+    cd ~/backend/dist
+    pm2 stop default
+    pm2 start main.js
+
+  args:
+    chdir: ~/backend/dist
+  environment:
+      NODE_ENV: production
+      TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
+      TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES') }}"
+      TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST') }}"
+      TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
+      TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME') }}"
+      TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD') }}"
+      TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE') }}"
+  
+
