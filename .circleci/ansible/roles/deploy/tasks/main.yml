@@ -6,7 +6,7 @@
 
 - name: "copy backend directory"
   copy:
-    src:  ~/project/.circleci/ansible/roles/deploy/files
+    src:  ./.circleci/ansible/roles/deploy/files
     dest:  ~/backend_app
     remote_src: true
 
