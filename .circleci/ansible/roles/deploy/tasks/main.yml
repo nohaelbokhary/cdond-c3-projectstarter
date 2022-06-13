@@ -14,8 +14,8 @@
   shell: |
       cd ~/backend-app
       tar xvzf artifact.tar.gz -C .
-      npm i
-      npm run build
+      sudo npm i
+      sudo npm run build
     
 
 - name: "delete all pm2 process"
