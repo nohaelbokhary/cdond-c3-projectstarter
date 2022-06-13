@@ -5,32 +5,14 @@
     src: ~/project/artifact.tar.gz
     dest: /home/ubuntu/artifact.tar.gz
 
-
-
 - name: prepare binaries
   become: true
   shell: |
-    cd /home/ubuntu/uda_app/
+    cd /home/ubuntu/UDA-APP
     tar xvzf artifact.tar.gz -C .
 
-- name: "delete anything that might already be running"
+- name: start server
   become: true
-  command: pm2 delete all
-  ignore_errors: true
-
-- name: "start server"
-  become: true
-  command: pm2 start -f ./main.js
-  args:
-    chdir: /home/ubuntu/uda_app/dist
-
-  
-  TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
-  TYPEORM_MIGRATIONS_DIR: "./migrations"
-  TYPEORM_MIGRATIONS: "./migrations/*.js"
-  TYPEORM_ENTITIES: "./modules/domain/**/*.entity.js"
-  TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST') }}"
-  TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
-  TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME') }}"
-  TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD') }}"
-  TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE') }}"
+  shell: |
+    cd /home/ubuntu/UDA-APP
+    pm2 start npm --name backend -- start
