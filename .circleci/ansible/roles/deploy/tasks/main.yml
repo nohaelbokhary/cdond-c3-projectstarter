@@ -18,13 +18,13 @@
     
 
 - name: "delete all pm2 process"
-  command: |
+  shell: |
      pm2 delete all
   ignore_errors: true
 
 
 - name: "start node app with PM2"
-  command: |
+  shell: |
     pm2 start ~/backend_app/main.js -f
   ignore_errors: true
 
