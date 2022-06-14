@@ -24,6 +24,7 @@
   shell: |
     cd /home/ubuntu/backend
     npm i
+    npm run build
     
 
 
