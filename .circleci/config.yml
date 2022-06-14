@@ -334,8 +334,7 @@ jobs:
       - install_ansible
       - add_ssh_keys:
           fingerprints: ["c3:38:9f:32:3a:b3:c8:62:89:b2:c8:e5:e9:13:40:18"]
-      - attach_workspace:
-              at: ~/       
+        
       - restore_cache:
           keys: [frontend-build]     
       - attach_workspace:
@@ -350,9 +349,8 @@ jobs:
           command: |
               cd backend
               npm run build
-            #cd ../
               tar -C /tmp/artifacts/backend -czvf artifact.tar.gz .
-             # cp artifact.tar.gz .circleci/ansible/roles/deploy/files
+            
       - run:
           name: deploy backend
           command: |
