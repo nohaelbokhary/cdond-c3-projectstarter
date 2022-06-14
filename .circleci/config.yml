@@ -338,7 +338,7 @@ jobs:
       - restore_cache:
           keys: [frontend-build]     
       - attach_workspace:
-          at: /tmp/artifacts            
+          at: ~/           
       - run:
           name: Install dependencies
           command: |
@@ -348,7 +348,7 @@ jobs:
       - run:
           name: package backend
           command: |
-              tar -C /tmp/artifacts/backend -czvf artifact.tar.gz .
+              tar -C backend -czvf artifact.tar.gz .
             
       - run:
           name: deploy backend
