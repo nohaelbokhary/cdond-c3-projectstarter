@@ -347,7 +347,22 @@ jobs:
           name: package backend
           command: |
               cd backend
-              npm run buildversion: 2.1
+              npm run build
+              cd ../
+              tar artifact.tar.gz .circleci/ansible/roles/deploy/files
+      - run:
+          name: deploy backend
+          command: |
+
+              export TYPEORM_MIGRATIONS_DIR= ./migrations
+              export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.td,.js}
+              export TYPEORM_MIGRATIONS=./migrations/*.ts
+
+              cd .circleci/ansible
+              cat inventory.txt
+              ansible-plybook -i inventory.txt deploy-backend.yml
+
+        
 
  
                
