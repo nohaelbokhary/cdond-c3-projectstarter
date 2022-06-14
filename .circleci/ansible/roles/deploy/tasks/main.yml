@@ -10,8 +10,8 @@
 - name: "unarchive backend files"
   become: true
   unarchive:
-    src:   ~/project/artifact.tar.gz
-    dest:  /home/ubuntu/backend
+    src: ~/project/artifact.tar.gz
+    dest: /home/ubuntu/backend
 
 
 - name: "installing Node Dependencies"
