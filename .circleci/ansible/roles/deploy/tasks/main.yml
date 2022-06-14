@@ -1,43 +1,31 @@
 ---
 - name: "Create Backend directory."
-  file:
-    path: ~/backend_app
-    state: directory
-
-- name: "copy backend directory"
+  become: true
   copy:
-    src: ~/project/artifact.tar.gz
-    dest:  ~/backend_app
+    src: artifact.tar.gz
+    dest: /home/ubuntu
+
+- name: "unarchive backend files"
+  decome: true
+  unarchive:
+    src:  artifact.tar.gz
+    dest:  /home/ubuntu
 
 
 - name: "installing Node Dependencies"
   shell: |
-      cd ~/backend-app
-      tar xvzf artifact.tar.gz -C .
-      sudo npm i
-      sudo npm run build
+    cd /home/ubuntu/backend
+    npm i
     
 
-- name: "delete all pm2 process"
-  shell: |
-     pm2 delete all
-  ignore_errors: true
 
 
 - name: "start node app with PM2"
+  become: true
   shell: |
-    pm2 start ~/backend_app/main.js -f
-  ignore_errors: true
+    cd  /home/ubuntu/backend/dist
+    pm2 stop default
+    pm2 start main.js
 
  
-  environment:
-      NODE_ENV: production
-      TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
-      TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES') }}"
-      TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST') }}"
-      TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
-      TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME') }}"
-      TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD') }}"
-      TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE') }}"
-  
 
