@@ -361,7 +361,13 @@ jobs:
 
               cd .circleci/ansible
               cat inventory.txt
-              ansible-plybook -i inventory.txt deploy-backend.yml
+              ansible-playbook -i inventory.txt deploy-backend.yml
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail    
+      - revert_migrations:
+          Workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail             
 
         
 
@@ -398,12 +404,12 @@ jobs:
             else
               exit 1
             fi     
-    #  - destroy_environment:
-     #     id: ${CIRCLE_WORKFLOW_ID:0:7}
-    #      when: on_fail    
-    #  - revert_migrations:
-    #      Workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}
-    #      when: on_fail                     
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail    
+      - revert_migrations:
+          Workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail                     
  
 
  
