@@ -7,6 +7,12 @@
     src: ~/project/artifact.tar.gz
     dest: /home/ubuntu/artifact.tar.gz
 
+- name: "making backend dir on remote host"
+  shell: |
+    cd /home/ubuntu/   
+    mkdir backend
+      
+
 - name: "unarchive backend files"
   become: true
   unarchive:
