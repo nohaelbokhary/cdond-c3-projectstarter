@@ -1,15 +1,16 @@
 ---
+
+
 - name: "Create Backend directory."
   become: true
   copy:
-    src: backend/artifact.tar.gz
-    dest: /home/ubuntu
-    remote_src: no
+    src: ~/project/artifact.tar.gz
+    dest: /home/ubuntu/artifact.tar.gz
 
 - name: "unarchive backend files"
   become: true
   unarchive:
-    src:  artifact.tar.gz
+    src:   ~/project/artifact.tar.gz
     dest:  /home/ubuntu
 
 
