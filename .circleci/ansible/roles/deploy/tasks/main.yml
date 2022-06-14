@@ -6,7 +6,7 @@
     dest: /home/ubuntu
 
 - name: "unarchive backend files"
-  decome: true
+  become: true
   unarchive:
     src:  artifact.tar.gz
     dest:  /home/ubuntu
