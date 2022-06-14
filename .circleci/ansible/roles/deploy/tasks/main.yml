@@ -10,7 +10,7 @@
 - name: "making backend dir on remote host"
   shell: |
     cd /home/ubuntu/   
-    mkdir backend
+    mkdir -p backend
       
 
 - name: "unarchive backend files"
