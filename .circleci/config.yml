@@ -343,12 +343,11 @@ jobs:
           name: Install dependencies
           command: |
               cd backend
-              npm install   
+              npm install  
+              npm run build
       - run:
           name: package backend
           command: |
-              cd backend
-              npm run build
               tar -C /tmp/artifacts/backend -czvf artifact.tar.gz .
             
       - run:
