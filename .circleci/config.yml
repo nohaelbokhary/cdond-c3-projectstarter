@@ -350,7 +350,7 @@ jobs:
               npm run build
               cd ../
               tar -czf artifact.tar.gz backend 
-              cp artifact.tar.gz .
+              #cp artifact.tar.gz .
       - run:
           name: deploy backend
           command: |
