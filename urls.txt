@@ -1,2 +1,2 @@
-URL01: https://github.com/nohaelbokhary/cdond-c3-projectstarter
-URL02:http://udapeople-1358321.s3-website-us-east-1.amazonaws.com/
+1-URL01:https://github.com/nohaelbokhary/cdond-c3-projectstarter
+2-URL02: http://udapeople-997ee33.s3-website-us-east-1.amazonaws.com
